@@ -24,8 +24,15 @@ int main() {
     BulletImage.loadFromFile("images/bullet.png");
     BulletImage.createMaskFromColor(sf::Color(0, 0, 0));
 
+    sf::SoundBuffer shootBuffer;
+    shootBuffer.loadFromFile("audio/shoot.ogg");
+    sf::Sound shoot;
+    shoot.setBuffer(shootBuffer);
+    shoot.setVolume(50);
+
     std::list<Entity*> entities;
     std::list<Entity*>::iterator it;
+    std::list<Entity*>::iterator it2;
 
     std::vector<Object> e = lvl.GetObjects("easyEnemy");
 
@@ -37,22 +44,36 @@ int main() {
     Player p(image, lvl, "player1", player.rect.left, player.rect.top, 32, 32);
 
     sf::Clock clock;
+    sf::FloatRect bulletRect;
+    bool delay = false;
+    float delayTime = 0;
 
     while (window.isOpen()) {
         float time = clock.getElapsedTime().asMicroseconds();
+        
         clock.restart();
         time = time / 800;
-
         sf::Event event;
+
+        if (delay) {
+            delayTime++;
+            if (delayTime > 100) {
+                delayTime = 0;
+                delay = false;
+            }
+        }
+
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
 
             if (event.type == sf::Event::KeyPressed)
             {
-                if (event.key.code == sf::Keyboard::P)
+                if ((event.key.code == sf::Keyboard::P) && (!delay))
                 {
-                    entities.push_back(new Bullet(BulletImage, "Bullet", lvl, p.x, p.y, 16, 16, p.state));
+                    entities.push_back(new Bullet(BulletImage, "Bullet", lvl, p.x, p.y, 8, 8, p.state));
+                    shoot.play();
+                    delay = true;
                 }
             }
         }
@@ -64,6 +85,19 @@ int main() {
             b->update(time);
             if (b->life == false) { it = entities.erase(it); delete b; }
             else it++;
+        }
+
+        for (it = entities.begin(); it != entities.end(); it++) {
+            if ((*it)->name == "Bullet") {
+                bulletRect = (*it)->getRect();
+
+                for (it2 = entities.begin(); it2 != entities.end(); it2++) {
+                    if (((*it2)->name == "easyEnemy") && ((*it2)->getRect().intersects(bulletRect))) {
+                        (*it2)->health -= 50;
+                        (*it)->life = false;
+                    }
+                }
+            }
         }
 
         changeView();

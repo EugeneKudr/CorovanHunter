@@ -9,18 +9,17 @@ Bullet::Bullet(sf::Image& image, sf::String Name, Level& lvl, float X, float Y, 
     y = Y;
     direction = dir;
     speed = 0.8;
-    w = h = 16;
+    w = h = 8;
 }
 
 void Bullet::update(float time) {
     switch (direction)
     {
     case 0: dx = -speed; dy = 0;   break;
-    case 1: dx = -speed; dy = 0;   break;
+    case 1: dx = speed; dy = 0;   break;
     case 2: dx = -speed; dy = 0;   break;
     case 3: dx = -speed; dy = 0;   break;
     case 4: dx = -speed; dy = 0;   break;
-    case 5: dx = -speed; dy = 0;   break;
     }
 
     x += dx * time;

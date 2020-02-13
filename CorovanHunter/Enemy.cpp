@@ -4,6 +4,7 @@ Enemy::Enemy(sf::Image& image, Level& lev, sf::String Name, float X, float Y, in
     Entity(image, X, Y, W, H, Name) {
     obj = lev.GetObjects("solid");
     if (name == "easyEnemy") {
+        health = 100;
         sprite.setTextureRect(sf::IntRect(96, 256, w, h));
         dx = 0.1;
     }
@@ -24,6 +25,7 @@ void Enemy::update(float time) {
             sprite.setTextureRect(sf::IntRect(32 * int(currentFrame) + 224, 256, 32, 32));
         }
         sprite.setPosition(x + w / 2, y + h / 2);
+        if (health <= 0) { life = false; }
     }
 }
 

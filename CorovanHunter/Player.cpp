@@ -62,7 +62,6 @@ void Player::update(float time)
     checkCollisionWithMap(0, dy);//обрабатываем столкновение по Y
 
     speed = 0;
-    state = stay;
 
     sprite.setPosition(x + w / 2, y + h / 2); //задаем позицию спрайта в место его центра
 }
