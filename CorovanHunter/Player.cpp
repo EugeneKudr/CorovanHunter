@@ -14,17 +14,34 @@ void Player::control(float time)
 {
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
         state = left;
-        speed = 0.1;
+        speed = 0.15;
         currentFrame += 0.005 * time;
         if (currentFrame > 4) currentFrame -= 4;
         sprite.setTextureRect(sf::IntRect(32 * int(currentFrame) + 288, 32, -32, 32));
     }
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
         state = right;
-        speed = 0.1;
+        speed = 0.15;
         currentFrame += 0.005 * time;
         if (currentFrame > 4) currentFrame -= 4;
         sprite.setTextureRect(sf::IntRect(32 * int(currentFrame) + 256, 32, 32, 32));
+    }
+
+    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Up))) {
+        state = up;
+        speed = 0.15;
+        currentFrame += 0.005 * time;
+        if (currentFrame > 4) currentFrame -= 4;
+        sprite.setTextureRect(sf::IntRect(32 * int(currentFrame) + 128, 32, 32, 32));
+    }
+
+    if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Down))) {
+        state = down;
+        speed = 0.15;
+        currentFrame += 0.005 * time;
+        if (currentFrame > 4) currentFrame -= 4;
+        sprite.setTextureRect(sf::IntRect(32 * int(currentFrame), 32, 32, 32));
     }
 }
 
@@ -33,11 +50,11 @@ void Player::update(float time)
     control(time);
     switch (state)
     {
-    case right: dx = speed; break;
-    case left: dx = -speed; break;
-    case up: break;
-    case down: break;
-    case stay: break;
+    case right: dx = speed; dy = 0; break;
+    case left: dx = -speed; dy = 0; break;
+    case up: dx = 0; dy = -speed; break;
+    case down: dx = 0;  dy = speed; break;
+    case stay: dx = 0; dy = 0; break;
     }
     x += dx * time;
     checkCollisionWithMap(dx, 0);//обрабатываем столкновение по Х
@@ -45,6 +62,7 @@ void Player::update(float time)
     checkCollisionWithMap(0, dy);//обрабатываем столкновение по Y
 
     speed = 0;
+    state = stay;
 
     sprite.setPosition(x + w / 2, y + h / 2); //задаем позицию спрайта в место его центра
 }

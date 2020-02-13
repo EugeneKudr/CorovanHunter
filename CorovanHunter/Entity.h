@@ -22,6 +22,8 @@ public:
     float currentFrame;
     int w;
     int h;
+    int health;
+    bool life;
 
     Entity(sf::Image& image, float X, float Y, int W, int H, sf::String Name);
 

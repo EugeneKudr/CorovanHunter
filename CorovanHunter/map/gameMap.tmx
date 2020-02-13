@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.3.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="40" height="23" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="8">
-<tileset firstgid="1" name="samplemap" tilewidth="32" tileheight="32" tilecount="3600" columns="60">
- <image source="map/samplemap.png" width="1920" height="1920"/>
-</tileset>
+ <tileset firstgid="1" name="samplemap" tilewidth="32" tileheight="32" tilecount="3600" columns="60">
+  <image source="map/samplemap.png" width="1920" height="1920"/>
+ </tileset>
  <layer id="1" name="Слой тайлов 1" width="40" height="23">
   <data>
    <tile gid="1272"/>
@@ -163,8 +163,8 @@
    <tile gid="1687"/>
    <tile gid="1687"/>
    <tile gid="1687"/>
-   <tile gid="2707"/>
-   <tile gid="2708"/>
+   <tile gid="1025"/>
+   <tile gid="1026"/>
    <tile gid="1687"/>
    <tile gid="1687"/>
    <tile gid="1687"/>
@@ -203,8 +203,8 @@
    <tile gid="2587"/>
    <tile gid="1687"/>
    <tile gid="1687"/>
-   <tile gid="2767"/>
-   <tile gid="2768"/>
+   <tile gid="1085"/>
+   <tile gid="1086"/>
    <tile gid="1687"/>
    <tile gid="1687"/>
    <tile gid="1687"/>
@@ -763,8 +763,8 @@
    <tile gid="1687"/>
    <tile gid="1687"/>
    <tile gid="1687"/>
-   <tile gid="1687"/>
-   <tile gid="1687"/>
+   <tile gid="1166"/>
+   <tile gid="1167"/>
    <tile gid="1687"/>
    <tile gid="1687"/>
    <tile gid="2587"/>
@@ -803,8 +803,8 @@
    <tile gid="3322"/>
    <tile gid="1687"/>
    <tile gid="1687"/>
-   <tile gid="2707"/>
-   <tile gid="2708"/>
+   <tile gid="1226"/>
+   <tile gid="1227"/>
    <tile gid="1687"/>
    <tile gid="1687"/>
    <tile gid="1687"/>
@@ -843,8 +843,8 @@
    <tile gid="1687"/>
    <tile gid="1687"/>
    <tile gid="1687"/>
-   <tile gid="2767"/>
-   <tile gid="2768"/>
+   <tile gid="1286"/>
+   <tile gid="1286"/>
    <tile gid="1210"/>
    <tile gid="1210"/>
    <tile gid="1210"/>
@@ -928,10 +928,10 @@
   </data>
  </layer>
  <objectgroup id="2" name="collision">
-  <object id="1" name="solid" x="-0.333333" y="672.333" width="1280.33" height="63.3333"/>
-  <object id="2" name="solid" x="0.25" y="0.25" width="1279.75" height="95.5"/>
-  <object id="3" name="solid" x="-44" y="0" width="45" height="736"/>
-  <object id="4" name="solid" x="1279" y="-1" width="29" height="737"/>
+  <object id="1" name="solid" x="-11.0833" y="673.833" width="1300.08" height="61.8333"/>
+  <object id="2" name="solid" x="-11.625" y="-1.25" width="1300.25" height="68.4091"/>
+  <object id="3" name="solid" x="-44" y="0" width="32.5" height="736"/>
+  <object id="4" name="solid" x="1289.25" y="-1" width="18.75" height="737"/>
   <object id="5" name="player1" x="1185" y="384" width="29" height="30"/>
   <object id="6" name="easyEnemy" x="32" y="543" width="31" height="32"/>
   <object id="7" name="easyEnemy" x="31" y="255" width="33" height="34"/>
