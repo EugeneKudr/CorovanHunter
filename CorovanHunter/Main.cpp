@@ -51,11 +51,14 @@ int main() {
     sf::FloatRect bulletRect;
     bool delay = false;
     float delayTime = 0;
+    int maxDelayTime = 100;
     int createObjectForMapTimer = 0;
     int spawnChance;
     int playerScore = 0;
     ScoreBar playerScoreBar;
-    int recharge = 100;
+    int ammo = 20;
+    bool recharge = false;
+    int rechargeTime = 500;
 
     while (window.isOpen()) {
         float time = clock.getElapsedTime().asMicroseconds();
@@ -63,22 +66,6 @@ int main() {
         clock.restart();
         time = time / 800;
         sf::Event event;
-
-        if (playerScore > 50) {
-            recharge = 50;
-            if (playerScore > 130) {
-                recharge = 25;
-                
-            }
-        }
-
-        if (delay) {
-            delayTime++;
-            if (delayTime > recharge) {
-                delayTime = 0;
-                delay = false;
-            }
-        }
 
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
@@ -94,9 +81,38 @@ int main() {
         }
 
         if ((p.life) && (p.isShoot) && (!delay)) {
-            bullets.push_back(new Bullet(BulletImage, "Bullet", lvl, p.x, p.y + 13, 8, 8, p.state));
-            shoot.play();
-            delay = true;
+            if (!recharge) {
+                bullets.push_back(new Bullet(BulletImage, "Bullet", lvl, p.x, p.y + 13, 8, 8, p.state));
+                ammo--;
+                shoot.play();
+                delay = true;
+            }
+        }
+
+        if (playerScore > 50) {
+            maxDelayTime = 50;
+            if (playerScore > 130) {
+                maxDelayTime = 25;
+            }
+        }
+
+        if (delay) {
+            delayTime++;
+            if (delayTime > maxDelayTime) {
+                delayTime = 0;
+                delay = false;
+            }
+        }
+
+        if (ammo <= 0) {
+            recharge = true;
+            rechargeTime--;
+        }
+
+        if (rechargeTime <= 0) {
+            ammo = 20;
+            recharge = false;
+            rechargeTime = 500;
         }
 
         createObjectForMapTimer += time;
@@ -153,7 +169,7 @@ int main() {
             }
         }
 
-        playerScoreBar.update(playerScore, p.health);
+        playerScoreBar.update(playerScore, p.health, ammo);
 
         changeView();
         window.setView(view);

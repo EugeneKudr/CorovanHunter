@@ -8,12 +8,14 @@ ScoreBar::ScoreBar() {
     text.setFillColor(sf::Color::Red);
 }
 
-void ScoreBar::update(int score, int health) {
+void ScoreBar::update(int score, int health, int ammo) {
     std::ostringstream playerScoreString;  
     std::ostringstream playerHealthString;
+    std::ostringstream playerAmmoString;
     playerScoreString << score;
     playerHealthString << health;
-    text.setString("Score: " + playerScoreString.str() + "\nHealth: " + playerHealthString.str());
+    playerAmmoString << ammo;
+    text.setString("Score: " + playerScoreString.str() + "\nHealth: " + playerHealthString.str() + "\nAmmo: " + playerAmmoString.str());
 
     if (health <= 0) {
         text.setCharacterSize(50);
