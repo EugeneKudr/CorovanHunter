@@ -4,6 +4,7 @@ Player::Player(sf::Image& image, Level& lev, sf::String Name, float X, float Y, 
 	Entity(image, X, Y, W, H, Name), state(stay) {
 
     obj = lev.GetAllObjects();
+    health = 4;
     if (name == "player1")
     {
         sprite.setTextureRect(sf::IntRect(96, 32, w, h));
@@ -47,23 +48,27 @@ void Player::control(float time)
 
 void Player::update(float time)
 {
-    control(time);
-    switch (state)
-    {
-    case right: dx = speed; dy = 0; break;
-    case left: dx = -speed; dy = 0; break;
-    case up: dx = 0; dy = -speed; break;
-    case down: dx = 0;  dy = speed; break;
-    case stay: dx = 0; dy = 0; break;
+    if (life) {
+        control(time);
+        switch (state)
+        {
+        case right: dx = speed; dy = 0; break;
+        case left: dx = -speed; dy = 0; break;
+        case up: dx = 0; dy = -speed; break;
+        case down: dx = 0;  dy = speed; break;
+        case stay: dx = 0; dy = 0; break;
+        }
+        x += dx * time;
+        checkCollisionWithMap(dx, 0);
+        y += dy * time;
+        checkCollisionWithMap(0, dy);
+
+        speed = 0;
+
+        sprite.setPosition(x + w / 2, y + h / 2); 
     }
-    x += dx * time;
-    checkCollisionWithMap(dx, 0);//обрабатываем столкновение по Х
-    y += dy * time;
-    checkCollisionWithMap(0, dy);//обрабатываем столкновение по Y
 
-    speed = 0;
-
-    sprite.setPosition(x + w / 2, y + h / 2); //задаем позицию спрайта в место его центра
+    if (health <= 0) { life = false; }
 }
 
 void Player::checkCollisionWithMap(float Dx, float Dy)

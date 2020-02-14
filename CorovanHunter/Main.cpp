@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "Bullet.h"
+#include "ScoreBar.h"
 
 int main() {
     extern sf::View view;
@@ -36,10 +37,6 @@ int main() {
 
     std::vector<Object> e = lvl.GetObjects("easyEnemy");
 
-    for (int i = 0; i < e.size(); i++) {
-        entities.push_back(new Enemy(image, lvl, "easyEnemy", e[i].rect.left, e[i].rect.top, 32, 32));
-    }
-
     Object player = lvl.GetObject("player1");
     Player p(image, lvl, "player1", player.rect.left, player.rect.top, 32, 32);
 
@@ -47,6 +44,10 @@ int main() {
     sf::FloatRect bulletRect;
     bool delay = false;
     float delayTime = 0;
+    int createObjectForMapTimer = 0;
+    int spawnChance;
+    int playerScore = 0;
+    ScoreBar playerScoreBar;
 
     while (window.isOpen()) {
         float time = clock.getElapsedTime().asMicroseconds();
@@ -71,11 +72,24 @@ int main() {
             {
                 if ((event.key.code == sf::Keyboard::P) && (!delay))
                 {
-                    entities.push_back(new Bullet(BulletImage, "Bullet", lvl, p.x, p.y, 8, 8, p.state));
-                    shoot.play();
-                    delay = true;
+                    if (p.life) {
+                        entities.push_back(new Bullet(BulletImage, "Bullet", lvl, p.x, p.y, 8, 8, p.state));
+                        shoot.play();
+                        delay = true;
+                    }
                 }
             }
+        }
+
+        createObjectForMapTimer += time;
+        if (createObjectForMapTimer > 3000) {
+            for (int i = 0; i < e.size(); i++) {
+                spawnChance = rand() % 10;
+                if ((spawnChance < 2) && (p.life)) {
+                    entities.push_back(new Enemy(image, lvl, "easyEnemy", e[i].rect.left, e[i].rect.top, 32, 32));
+                }
+            }
+            createObjectForMapTimer = 0;
         }
 
         p.update(time);
@@ -83,7 +97,25 @@ int main() {
         for (it = entities.begin(); it != entities.end();) {
             Entity* b = *it;
             b->update(time);
-            if (b->life == false) { it = entities.erase(it); delete b; }
+
+            if (b->name == "easyEnemy") {
+                if (b->damageDeal) {
+                    p.health -= 1;
+                }
+            }
+
+            if (!p.life) {
+                b->dx = 0;
+            }
+
+            if (!b->life) { 
+                if (b->name == "easyEnemy") {
+                    playerScore++;
+                }
+
+                it = entities.erase(it); 
+                delete b; 
+            }
             else it++;
         }
 
@@ -100,6 +132,8 @@ int main() {
             }
         }
 
+        playerScoreBar.update(playerScore, p.health);
+
         changeView();
         window.setView(view);
 
@@ -111,6 +145,13 @@ int main() {
         }
 
         window.draw(p.sprite);
+        
+        if (p.life) {
+            playerScoreBar.draw(window);
+        }
+        else {
+            playerScoreBar.gameOver(window);
+        }
         window.display();
     }
 

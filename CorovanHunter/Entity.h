@@ -24,6 +24,7 @@ public:
     int h;
     int health;
     bool life;
+    bool damageDeal;
 
     Entity(sf::Image& image, float X, float Y, int W, int H, sf::String Name);
 

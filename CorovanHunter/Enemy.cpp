@@ -5,8 +5,11 @@ Enemy::Enemy(sf::Image& image, Level& lev, sf::String Name, float X, float Y, in
     obj = lev.GetObjects("solid");
     if (name == "easyEnemy") {
         health = 100;
+        damageDeal = false;
         sprite.setTextureRect(sf::IntRect(96, 256, w, h));
-        dx = 0.1;
+        int randoms = rand() % 5 + 5;
+        dx = randoms * 0.01;
+        animationSpeed = 0.005;
     }
 }
 
@@ -15,12 +18,12 @@ void Enemy::update(float time) {
         checkCollisionWithMap(dx, 0);
         x += dx * time;
         if (dx < 0) {
-            currentFrame += 0.005 * time;
+            currentFrame += animationSpeed * time;
             if (currentFrame > 4) currentFrame -= 3;
             sprite.setTextureRect(sf::IntRect(32 * int(currentFrame) + 256, 256, -32, 32));
         }
         if (dx > 0) {
-            currentFrame += 0.005 * time;
+            currentFrame += animationSpeed * time;
             if (currentFrame > 4) currentFrame -= 3;
             sprite.setTextureRect(sf::IntRect(32 * int(currentFrame) + 224, 256, 32, 32));
         }
@@ -33,10 +36,10 @@ void Enemy::checkCollisionWithMap(float Dx, float Dy) {
     for (int i = 0; i < obj.size(); i++)
         if (getRect().intersects(obj[i].rect)) {
             if (obj[i].name == "solid") {
-                if (Dy > 0) { y = obj[i].rect.top - h;  dy = 0; }
-                if (Dy < 0) { y = obj[i].rect.top + obj[i].rect.height;   dy = 0; }
-                if (Dx > 0) { x = obj[i].rect.left - w;  dx = -0.1; }
-                if (Dx < 0) { x = obj[i].rect.left + obj[i].rect.width; dx = 0.1; }
+                if (Dy > 0) { life = false; }
+                if (Dy < 0) { life = false; }
+                if (Dx > 0) { life = false; damageDeal = true; }
+                if (Dx < 0) { life = false; }
             }
         }
 }

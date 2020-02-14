@@ -147,6 +147,7 @@
     <ClCompile Include="level.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="ScoreBar.cpp" />
     <ClCompile Include="tinyxml\tinystr.cpp" />
     <ClCompile Include="tinyxml\tinyxml.cpp" />
     <ClCompile Include="tinyxml\tinyxmlerror.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="ScoreBar.h" />
     <ClInclude Include="tinyxml\tinystr.h" />
     <ClInclude Include="tinyxml\tinyxml.h" />
     <ClInclude Include="view.h" />
