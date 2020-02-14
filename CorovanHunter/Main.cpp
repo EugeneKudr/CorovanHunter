@@ -20,7 +20,7 @@ int main() {
     sf::Image image;
     image.loadFromFile("images/sprites.png");
     image.createMaskFromColor(sf::Color(255, 0, 255));
-
+ 
     sf::Image BulletImage;
     BulletImage.loadFromFile("images/bullet.png");
     BulletImage.createMaskFromColor(sf::Color(0, 0, 0));
@@ -29,9 +29,16 @@ int main() {
     shootBuffer.loadFromFile("audio/shoot.ogg");
     sf::Sound shoot;
     shoot.setBuffer(shootBuffer);
-    shoot.setVolume(50);
+    shoot.setVolume(1);
 
-    std::list<Entity*> entities;
+    sf::Music archerTheme;
+    archerTheme.openFromFile("audio/archer.ogg");
+    archerTheme.setVolume(5);
+    archerTheme.play();
+    archerTheme.setLoop(true);
+
+    std::list<Entity*> enemies;
+    std::list<Entity*> bullets;
     std::list<Entity*>::iterator it;
     std::list<Entity*>::iterator it2;
 
@@ -48,6 +55,7 @@ int main() {
     int spawnChance;
     int playerScore = 0;
     ScoreBar playerScoreBar;
+    int recharge = 100;
 
     while (window.isOpen()) {
         float time = clock.getElapsedTime().asMicroseconds();
@@ -56,37 +64,49 @@ int main() {
         time = time / 800;
         sf::Event event;
 
+        if (playerScore > 50) {
+            recharge = 50;
+            if (playerScore > 130) {
+                recharge = 25;
+                
+            }
+        }
+
         if (delay) {
             delayTime++;
-            if (delayTime > 100) {
+            if (delayTime > recharge) {
                 delayTime = 0;
                 delay = false;
             }
         }
 
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed) {
                 window.close();
+            }
 
             if (event.type == sf::Event::KeyPressed)
-            {
-                if ((event.key.code == sf::Keyboard::P) && (!delay))
-                {
-                    if (p.life) {
-                        entities.push_back(new Bullet(BulletImage, "Bullet", lvl, p.x, p.y, 8, 8, p.state));
-                        shoot.play();
-                        delay = true;
-                    }
-                }
-            }
+                if (event.key.code == sf::Keyboard::P)
+                    p.isShoot = true;
+            if (event.type == sf::Event::KeyReleased)
+                if (event.key.code == sf::Keyboard::P)
+                    p.isShoot = false;
+        }
+
+        if ((p.life) && (p.isShoot) && (!delay)) {
+            bullets.push_back(new Bullet(BulletImage, "Bullet", lvl, p.x, p.y + 13, 8, 8, p.state));
+            shoot.play();
+            delay = true;
         }
 
         createObjectForMapTimer += time;
-        if (createObjectForMapTimer > 3000) {
+        int spawnThreshold = 3000 - playerScore * 15;
+        if (spawnThreshold < 500) spawnThreshold = 500;
+        if (createObjectForMapTimer > spawnThreshold) {
             for (int i = 0; i < e.size(); i++) {
                 spawnChance = rand() % 10;
                 if ((spawnChance < 2) && (p.life)) {
-                    entities.push_back(new Enemy(image, lvl, "easyEnemy", e[i].rect.left, e[i].rect.top, 32, 32));
+                    enemies.push_back(new Enemy(image, lvl, "easyEnemy", e[i].rect.left, e[i].rect.top, 32, 32));
                 }
             }
             createObjectForMapTimer = 0;
@@ -94,40 +114,41 @@ int main() {
 
         p.update(time);
 
-        for (it = entities.begin(); it != entities.end();) {
-            Entity* b = *it;
-            b->update(time);
+        for (it = enemies.begin(); it != enemies.end();) {
+            (*it)->update(time);
 
-            if (b->name == "easyEnemy") {
-                if (b->damageDeal) {
+            if ((*it)->damageDeal) {
                     p.health -= 1;
-                }
             }
 
             if (!p.life) {
-                b->dx = 0;
+                (*it)->dx = 0;
             }
 
-            if (!b->life) { 
-                if (b->name == "easyEnemy") {
-                    playerScore++;
-                }
-
-                it = entities.erase(it); 
-                delete b; 
+            if (!(*it)->life) { 
+                playerScore++;
+                delete (*it);
+                it = enemies.erase(it); 
             }
             else it++;
         }
 
-        for (it = entities.begin(); it != entities.end(); it++) {
-            if ((*it)->name == "Bullet") {
-                bulletRect = (*it)->getRect();
+        for (it = bullets.begin(); it != bullets.end();) {
+            (*it)->update(time);
 
-                for (it2 = entities.begin(); it2 != entities.end(); it2++) {
-                    if (((*it2)->name == "easyEnemy") && ((*it2)->getRect().intersects(bulletRect))) {
-                        (*it2)->health -= 50;
-                        (*it)->life = false;
-                    }
+            if (!(*it)->life) {
+                delete (*it);
+                it = bullets.erase(it);
+            }
+            else it++;
+        }
+
+        for (it = bullets.begin(); it != bullets.end(); it++) {
+            bulletRect = (*it)->getRect();
+            for (it2 = enemies.begin(); it2 != enemies.end(); it2++) {
+                if ((*it2)->getRect().intersects(bulletRect)) {
+                    (*it2)->health -= 50;
+                    (*it)->life = false;
                 }
             }
         }
@@ -140,7 +161,11 @@ int main() {
         window.clear();
         lvl.Draw(window);
 
-        for (it = entities.begin(); it != entities.end(); it++) {
+        for (it = enemies.begin(); it != enemies.end(); it++) {
+            window.draw((*it)->sprite);
+        }
+
+        for (it = bullets.begin(); it != bullets.end(); it++) {
             window.draw((*it)->sprite);
         }
 

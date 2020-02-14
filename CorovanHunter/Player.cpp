@@ -5,9 +5,11 @@ Player::Player(sf::Image& image, Level& lev, sf::String Name, float X, float Y, 
 
     obj = lev.GetAllObjects();
     health = 4;
+    isShoot = false;
     if (name == "player1")
     {
-        sprite.setTextureRect(sf::IntRect(96, 32, w, h));
+        sprite.setTextureRect(sf::IntRect(288, 32, w, h));
+        sprite.scale(-1, 1);
     }
 }
 
@@ -18,7 +20,7 @@ void Player::control(float time)
         speed = 0.15;
         currentFrame += 0.005 * time;
         if (currentFrame > 4) currentFrame -= 4;
-        sprite.setTextureRect(sf::IntRect(32 * int(currentFrame) + 288, 32, -32, 32));
+        sprite.setTextureRect(sf::IntRect(32 * int(currentFrame) + 256, 32, 32, 32));
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
@@ -34,7 +36,7 @@ void Player::control(float time)
         speed = 0.15;
         currentFrame += 0.005 * time;
         if (currentFrame > 4) currentFrame -= 4;
-        sprite.setTextureRect(sf::IntRect(32 * int(currentFrame) + 128, 32, 32, 32));
+        sprite.setTextureRect(sf::IntRect(32 * int(currentFrame) + 256, 32, 32, 32));
     }
 
     if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Down))) {
@@ -42,7 +44,7 @@ void Player::control(float time)
         speed = 0.15;
         currentFrame += 0.005 * time;
         if (currentFrame > 4) currentFrame -= 4;
-        sprite.setTextureRect(sf::IntRect(32 * int(currentFrame), 32, 32, 32));
+        sprite.setTextureRect(sf::IntRect(32 * int(currentFrame) + 256, 32, 32, 32));
     }
 }
 

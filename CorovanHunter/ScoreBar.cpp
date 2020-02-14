@@ -17,7 +17,7 @@ void ScoreBar::update(int score, int health) {
 
     if (health <= 0) {
         text.setCharacterSize(50);
-        text.setString("GAME OVER");
+        text.setString("GAME OVER\nSCORE: " + playerScoreString.str());
     }
 }
 
