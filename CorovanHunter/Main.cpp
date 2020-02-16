@@ -8,6 +8,8 @@
 #include "Enemy.h"
 #include "Bullet.h"
 #include "ScoreBar.h"
+#include "Weapon.h"
+#include "loadObjects.h"
 
 int main() {
     extern sf::View view;
@@ -18,24 +20,12 @@ int main() {
     lvl.LoadFromFile("map/gameMap.tmx");
 
     sf::Image image;
-    image.loadFromFile("images/sprites.png");
-    image.createMaskFromColor(sf::Color(255, 0, 255));
- 
     sf::Image BulletImage;
-    BulletImage.loadFromFile("images/bullet.png");
-    BulletImage.createMaskFromColor(sf::Color(0, 0, 0));
-
     sf::SoundBuffer shootBuffer;
-    shootBuffer.loadFromFile("audio/shoot.ogg");
     sf::Sound shoot;
-    shoot.setBuffer(shootBuffer);
-    shoot.setVolume(1);
-
     sf::Music archerTheme;
-    archerTheme.openFromFile("audio/archer.ogg");
-    archerTheme.setVolume(5);
-    archerTheme.play();
-    archerTheme.setLoop(true);
+
+    preLoad(image, BulletImage, shootBuffer, shoot, archerTheme);
 
     std::list<Entity*> enemies;
     std::list<Entity*> bullets;
@@ -49,16 +39,12 @@ int main() {
 
     sf::Clock clock;
     sf::FloatRect bulletRect;
-    bool delay = false;
-    float delayTime = 0;
-    int maxDelayTime = 100;
     int createObjectForMapTimer = 0;
     int spawnChance;
     int playerScore = 0;
     ScoreBar playerScoreBar;
-    int ammo = 20;
-    bool recharge = false;
-    int rechargeTime = 500;
+    Weapon pistol;
+    int maxSpawnChance = 2;
 
     while (window.isOpen()) {
         float time = clock.getElapsedTime().asMicroseconds();
@@ -80,48 +66,34 @@ int main() {
                     p.isShoot = false;
         }
 
-        if ((p.life) && (p.isShoot) && (!delay)) {
-            if (!recharge) {
+        if ((p.life) && (p.isShoot) && (!pistol.delay)) {
+            if (!pistol.recharge) {
                 bullets.push_back(new Bullet(BulletImage, "Bullet", lvl, p.x, p.y + 13, 8, 8, p.state));
-                ammo--;
+                pistol.ammo--;
                 shoot.play();
-                delay = true;
+                pistol.delay = true;
             }
         }
 
-        if (playerScore > 50) {
-            maxDelayTime = 50;
-            if (playerScore > 130) {
-                maxDelayTime = 25;
-            }
-        }
-
-        if (delay) {
-            delayTime++;
-            if (delayTime > maxDelayTime) {
-                delayTime = 0;
-                delay = false;
-            }
-        }
-
-        if (ammo <= 0) {
-            recharge = true;
-            rechargeTime--;
-        }
-
-        if (rechargeTime <= 0) {
-            ammo = 20;
-            recharge = false;
-            rechargeTime = 500;
-        }
+        pistol.update(playerScore);
 
         createObjectForMapTimer += time;
-        int spawnThreshold = 3000 - playerScore * 15;
+        int spawnThreshold = 4000 - playerScore * 15;
         if (spawnThreshold < 500) spawnThreshold = 500;
+        if (playerScore > 250) {
+            maxSpawnChance = 3;
+            if (playerScore > 350) {
+                maxSpawnChance = 4;
+                if (playerScore > 500) {
+                    maxSpawnChance = 7;
+                }
+            }
+        }
+
         if (createObjectForMapTimer > spawnThreshold) {
             for (int i = 0; i < e.size(); i++) {
                 spawnChance = rand() % 10;
-                if ((spawnChance < 2) && (p.life)) {
+                if ((spawnChance < maxSpawnChance) && (p.life)) {
                     enemies.push_back(new Enemy(image, lvl, "easyEnemy", e[i].rect.left, e[i].rect.top, 32, 32));
                 }
             }
@@ -163,13 +135,13 @@ int main() {
             bulletRect = (*it)->getRect();
             for (it2 = enemies.begin(); it2 != enemies.end(); it2++) {
                 if ((*it2)->getRect().intersects(bulletRect)) {
-                    (*it2)->health -= 50;
+                    (*it2)->health -= pistol.weaponDamage;
                     (*it)->life = false;
                 }
             }
         }
 
-        playerScoreBar.update(playerScore, p.health, ammo);
+        playerScoreBar.update(playerScore, p.health, pistol.ammo);
 
         changeView();
         window.setView(view);
