@@ -10,6 +10,7 @@
 #include "ScoreBar.h"
 #include "Weapon.h"
 #include "loadObjects.h"
+#include "PlayerEffects.h"
 
 int main() {
     extern sf::View view;
@@ -27,10 +28,10 @@ int main() {
 
     preLoad(image, BulletImage, shootBuffer, shoot, archerTheme);
 
-    std::list<Entity*> enemies;
-    std::list<Entity*> bullets;
-    std::list<Entity*>::iterator it;
-    std::list<Entity*>::iterator it2;
+    std::list<Enemy*> enemies;
+    std::list<Bullet*> bullets;
+    std::list<Enemy*>::iterator it;
+    std::list<Bullet*>::iterator it2;
 
     std::vector<Object> e = lvl.GetObjects("easyEnemy");
 
@@ -45,6 +46,7 @@ int main() {
     ScoreBar playerScoreBar;
     Weapon pistol;
     int maxSpawnChance = 2;
+    PlayerEffects fire;
 
     while (window.isOpen()) {
         float time = clock.getElapsedTime().asMicroseconds();
@@ -72,9 +74,11 @@ int main() {
                 pistol.ammo--;
                 shoot.play();
                 pistol.delay = true;
+                fire.gunFire();
             }
         }
-
+        
+        fire.updateFire(p.x, p.y, time);
         pistol.update(playerScore);
 
         createObjectForMapTimer += time;
@@ -121,22 +125,22 @@ int main() {
             else it++;
         }
 
-        for (it = bullets.begin(); it != bullets.end();) {
-            (*it)->update(time);
+        for (it2 = bullets.begin(); it2 != bullets.end();) {
+            (*it2)->update(time);
 
-            if (!(*it)->life) {
-                delete (*it);
-                it = bullets.erase(it);
+            if (!(*it2)->life) {
+                delete (*it2);
+                it2 = bullets.erase(it2);
             }
-            else it++;
+            else it2++;
         }
 
-        for (it = bullets.begin(); it != bullets.end(); it++) {
-            bulletRect = (*it)->getRect();
-            for (it2 = enemies.begin(); it2 != enemies.end(); it2++) {
-                if ((*it2)->getRect().intersects(bulletRect)) {
-                    (*it2)->health -= pistol.weaponDamage;
-                    (*it)->life = false;
+        for (it2 = bullets.begin(); it2 != bullets.end(); it2++) {
+            bulletRect = (*it2)->getRect();
+            for (it = enemies.begin(); it != enemies.end(); it++) {
+                if ((*it)->getRect().intersects(bulletRect)) {
+                    (*it)->health -= pistol.weaponDamage;
+                    (*it2)->life = false;
                 }
             }
         }
@@ -153,9 +157,11 @@ int main() {
             window.draw((*it)->sprite);
         }
 
-        for (it = bullets.begin(); it != bullets.end(); it++) {
-            window.draw((*it)->sprite);
+        for (it2 = bullets.begin(); it2 != bullets.end(); it2++) {
+            window.draw((*it2)->sprite);
         }
+
+        window.draw(fire.sprite);
 
         window.draw(p.sprite);
         

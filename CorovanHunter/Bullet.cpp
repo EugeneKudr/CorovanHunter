@@ -31,6 +31,5 @@ void Bullet::update(float time) {
             life = false;
         }
     }
-
     sprite.setPosition(x + w / 2, y + h / 2);
 }
