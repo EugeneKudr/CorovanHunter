@@ -11,6 +11,7 @@
 #include "Weapon.h"
 #include "loadObjects.h"
 #include "PlayerEffects.h"
+#include "LifeBar.h"
 
 int main() {
     extern sf::View view;
@@ -47,6 +48,7 @@ int main() {
     Weapon pistol;
     int maxSpawnChance = 2;
     PlayerEffects fire;
+    LifeBar playerLife;
 
     while (window.isOpen()) {
         float time = clock.getElapsedTime().asMicroseconds();
@@ -79,6 +81,7 @@ int main() {
         
         fire.updateFire(p.x, p.y, time);
         pistol.update(playerScore);
+        playerLife.update(p.health);
 
         createObjectForMapTimer += time;
         int spawnThreshold = 4000 - playerScore * 15;
@@ -111,7 +114,9 @@ int main() {
             }
 
             if (!(*it)->life) { 
-                playerScore++;
+                if (!(*it)->damageDeal) {
+                    playerScore++;
+                }
                 delete (*it);
                 it = enemies.erase(it); 
             }
@@ -162,8 +167,8 @@ int main() {
         }
 
         window.draw(fire.sprite);
-
         window.draw(p.sprite);
+        playerLife.draw(window);
         
         if (p.life) {
             playerScoreBar.draw(window);
