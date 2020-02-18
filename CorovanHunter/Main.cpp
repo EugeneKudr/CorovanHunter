@@ -50,7 +50,6 @@ int main() {
 
     while (window.isOpen()) {
         float time = clock.getElapsedTime().asMicroseconds();
-        
         clock.restart();
         time = time / 800;
         sf::Event event;
@@ -70,7 +69,7 @@ int main() {
 
         if ((p.life) && (p.isShoot) && (!pistol.delay)) {
             if (!pistol.recharge) {
-                bullets.push_back(new Bullet(BulletImage, "Bullet", lvl, p.x, p.y + 13, 8, 8, p.state));
+                bullets.push_back(new Bullet(BulletImage, "Bullet", lvl, p.x, p.y + 13, 6, 6, p.state));
                 pistol.ammo--;
                 shoot.play();
                 pistol.delay = true;
@@ -83,15 +82,9 @@ int main() {
 
         createObjectForMapTimer += time;
         int spawnThreshold = 4000 - playerScore * 15;
-        if (spawnThreshold < 500) spawnThreshold = 500;
+        if (spawnThreshold < 700) spawnThreshold = 700;
         if (playerScore > 250) {
             maxSpawnChance = 3;
-            if (playerScore > 350) {
-                maxSpawnChance = 4;
-                if (playerScore > 500) {
-                    maxSpawnChance = 7;
-                }
-            }
         }
 
         if (createObjectForMapTimer > spawnThreshold) {
@@ -138,8 +131,15 @@ int main() {
         for (it2 = bullets.begin(); it2 != bullets.end(); it2++) {
             bulletRect = (*it2)->getRect();
             for (it = enemies.begin(); it != enemies.end(); it++) {
-                if ((*it)->getRect().intersects(bulletRect)) {
-                    (*it)->health -= pistol.weaponDamage;
+                if (((*it)->getRect().intersects(bulletRect)) && ((*it)->dieDelay == 0)) {
+                    if ((*it2)->y < ((*it)->y + 10)) {
+                        (*it)->health -= pistol.weaponDamage * 2;
+                        (*it)->sprite.setColor(sf::Color::Green);
+                    }
+                    else {
+                        (*it)->health -= pistol.weaponDamage;
+                        (*it)->sprite.setColor(sf::Color::Red);
+                    }
                     (*it2)->life = false;
                 }
             }

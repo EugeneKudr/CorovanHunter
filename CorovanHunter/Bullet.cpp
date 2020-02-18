@@ -8,9 +8,9 @@ Bullet::Bullet(sf::Image& image, sf::String Name, Level& lvl, float X, float Y, 
     x = X;
     y = Y;
     direction = dir;
-    speed = 2;
-    w = h = 8;
-    sprite.scale(0.5, 0.5);
+    speed = 3;
+    w = h = 6;
+    sprite.scale(0.4, 0.4);
 }
 
 void Bullet::update(float time) {
