@@ -8,24 +8,31 @@ Weapon::Weapon() {
     maxAmmo = 20;
     recharge = false;
     rechargeTime = 500;
-    weaponDamage = 50;
+    weaponDamage = 25;
+    name = "colt_45";
 
     reloadBuffer.loadFromFile("audio/reload.ogg");
     reload.setBuffer(reloadBuffer);
     reload.setVolume(10);
+    weaponLoad(name, 12, 8);
 }
 
-void Weapon::update(int playerScore) {
-    if (playerScore > 50) {
+void Weapon::weaponLoad(std::string name, int w, int h) {
+    weapImage.loadFromFile("images/" + name + ".png");
+    weapImage.createMaskFromColor(sf::Color(255, 255, 255));
+    weapTexture.loadFromImage(weapImage);
+    weapSprite.setTexture(weapTexture);
+    weapSprite.setTextureRect(sf::IntRect(0, 0, w, h));
+}
+
+void Weapon::update(int playerScore, float x, float y) {
+    weapSprite.setPosition(x + 6, y + 17);
+
+    if ((playerScore > 10) && (name == "colt_45")) {
+        name = "mp40";
+        weaponLoad(name, 17, 8);
         maxDelayTime = 50;
         maxAmmo = 40;
-        if (playerScore > 130) {
-            maxDelayTime = 25;
-            maxAmmo = 100;
-            if (playerScore > 250) {
-                weaponDamage = 100;
-            }
-        }
     }
 
     if (delay) {
@@ -49,4 +56,8 @@ void Weapon::update(int playerScore) {
         recharge = false;
         rechargeTime = 500;
     }
+}
+
+void Weapon::drawWeapon(sf::RenderWindow& window) {
+    window.draw(weapSprite);
 }

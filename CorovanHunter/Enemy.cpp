@@ -13,6 +13,13 @@ Enemy::Enemy(sf::Image& image, Level& lev, sf::String Name, float X, float Y, in
         colorTime = 0;
         dieDelay = 0;
     }
+
+    imageLife.loadFromFile("images/enemybar.png");
+    t.loadFromImage(imageLife);
+    s.setTexture(t);
+    s.setTextureRect(sf::IntRect(0, 0, 32, 5));
+    bar.setFillColor(sf::Color(255, 0, 0));
+    max = health;
 }
 
 void Enemy::update(float time) {
@@ -44,13 +51,16 @@ void Enemy::update(float time) {
             dx = 0;
             sprite.setTextureRect(sf::IntRect(96, 256, 32, 32));
             dieDelay += time;
-            if (dieDelay > 200) {
-                sprite.setColor(sf::Color::Yellow);
-            }
             if (dieDelay > 240) {
                 life = false;
             }
         }
+    }
+
+    if (health >= 0) {
+        bar.setSize(sf::Vector2f(health * 30 / max, 3));
+        s.setPosition(x - 2, y - 10);
+        bar.setPosition(x - 1, y - 9);
     }
 }
 
@@ -61,4 +71,11 @@ void Enemy::checkCollisionWithMap(float Dx, float Dy) {
                 if (x > 100) { life = false; damageDeal = true; }
             }
         }
+}
+
+void Enemy::drawLifeBar(sf::RenderWindow& window) {
+    if (health < max) {
+        window.draw(s);
+        window.draw(bar);
+    }
 }

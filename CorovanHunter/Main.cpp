@@ -46,7 +46,7 @@ int main() {
     int playerScore = 0;
     ScoreBar playerScoreBar;
     Weapon pistol;
-    int maxSpawnChance = 2;
+    int maxSpawnChance = 10;
     PlayerEffects fire;
     LifeBar playerLife;
 
@@ -80,7 +80,7 @@ int main() {
         }
         
         fire.updateFire(p.x, p.y, time);
-        pistol.update(playerScore);
+        pistol.update(playerScore, p.x, p.y);
         playerLife.update(p.health);
 
         createObjectForMapTimer += time;
@@ -92,7 +92,7 @@ int main() {
 
         if (createObjectForMapTimer > spawnThreshold) {
             for (int i = 0; i < e.size(); i++) {
-                spawnChance = rand() % 10;
+                spawnChance = rand() % 100;
                 if ((spawnChance < maxSpawnChance) && (p.life)) {
                     enemies.push_back(new Enemy(image, lvl, "easyEnemy", e[i].rect.left, e[i].rect.top, 32, 32));
                 }
@@ -160,6 +160,7 @@ int main() {
 
         for (it = enemies.begin(); it != enemies.end(); it++) {
             window.draw((*it)->sprite);
+            (*it)->drawLifeBar(window);
         }
 
         for (it2 = bullets.begin(); it2 != bullets.end(); it2++) {
@@ -169,6 +170,8 @@ int main() {
         window.draw(fire.sprite);
         window.draw(p.sprite);
         playerLife.draw(window);
+        
+        pistol.drawWeapon(window);
         
         if (p.life) {
             playerScoreBar.draw(window);

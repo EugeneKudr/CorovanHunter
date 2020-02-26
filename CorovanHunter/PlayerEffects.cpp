@@ -21,7 +21,7 @@ void PlayerEffects::gunFire() {
 
 void PlayerEffects::updateFire(int x, int y, float time) {
 	counter += time;
-	sprite.setPosition(x - 8, y + 18.5);
+	sprite.setPosition(x - 4, y + 19.5);
 
 	if (counter > 100) {
 		sprite.setTextureRect(sf::IntRect(180, 0, 180, 98));

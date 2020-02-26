@@ -14,6 +14,6 @@ void preLoad(sf::Image &image, sf::Image &BulletImage, sf::SoundBuffer &shootBuf
 
 	archerTheme.openFromFile("audio/archer.ogg");
 	archerTheme.setVolume(5);
-	archerTheme.play();
+	//archerTheme.play();
 	archerTheme.setLoop(true);
 }
